@@ -1,8 +1,10 @@
 # IMPORTING THE REQUIRED MODULES IN THE WORKSPACE
 import uuid as uid
-import time
 from streamlit_option_menu import option_menu
+
+# IMPORTING THE functionalities.py 
 from functionalities import * 
+from records import *
 
 
 #NAVIGATION LAYOUT
@@ -28,6 +30,7 @@ stream.markdown(html_temp, unsafe_allow_html=True)
 
 # DEFINING THE STATIC PATHS
 if stream.sidebar.button("CLEAR DATABASE"):
+      
       rtfd_warning_message = stream.sidebar.warning("ALL DATA WOULD BE DELETED")
       time.sleep(2)
       rtfd_warning_message.empty()
@@ -92,10 +95,11 @@ def main():
 
 
       # MENU 
-      selected_menu = option_menu(None, ['VALIDATION', 'HISTORY', 'DATABASE'], icons=['camera', 'clock-history', 'person-plus'], menu_icon="cast", default_index=0, orientation='horizontal')
+      selected_menu = option_menu(None, ['VALIDATION', 'HISTORY', 'DATABASE', 'RECORDS'], icons=['camera', 'clock-history', 'person-plus', 'book'], menu_icon="cast", default_index=0, orientation='horizontal')
 
 
       # FUNCTIONALITIES BASED ON USER SELECTION 
+      # USER SELECTION AS VALIDATION
       if selected_menu == 'VALIDATION':
             #GENERATING A RANDOM ID USING UUID
             visitor_id = uid.uuid1()
@@ -110,7 +114,9 @@ def main():
                   #SAVING STUDENT HISTORY
                   with open(os.path.join(VISITOR_HISTORY, f'{visitor_id}.jpg'), 'wb') as file:
                         file.write(image_file_buffer.getbuffer())
-                        stream.success("IMAGE SAVED SUCCESSFULLY !")
+                        image_success_message = stream.success("IMAGE SAVED SUCCESSFULLY !")
+                        time.sleep(2)
+                        image_success_message.empty()
 
                         #VALIDATING IMAGE
                         maximum_faces = 0
@@ -163,7 +169,10 @@ def main():
                                           faces = face_recognition.face_encodings(roi)
 
                                           if len(faces) < 1:
-                                                stream.error(f"PLEASE TRY AGAIN FOR FACE #{face_idx}!")
+                                                try_again_error_message =  stream.error(f"PLEASE TRY AGAIN FOR FACE #{face_idx}!")
+                                                time.sleep(2)
+                                                try_again_error_message.empty()
+
                                           else:
                                                 face_to_compare = faces[0]
 
@@ -200,22 +209,30 @@ def main():
                                                       flag_show = True
 
                                                 else:
-                                                      stream.error(f"NO MATCH FOUND FOR THE GIVEN SIMILARITY THRESHOLD FOR FACE #{face_idx}")
-                                                      stream.info("PLEASE UPDATE THE DATABASE FOR NEW STUDENT AND CLICK AGAIN")
+                                                      no_match_error_message = stream.error(f"NO MATCH FOUND FOR THE GIVEN SIMILARITY THRESHOLD FOR FACE #{face_idx}")
+                                                      time.sleep(2)
+                                                      no_match_error_message.empty()
+
+                                                      update_notification_message = stream.info("PLEASE UPDATE THE DATABASE FOR NEW STUDENT AND CLICK AGAIN")
+                                                      time.sleep(2)
+                                                      update_notification_message.empty()
                                                       attendance(visitor_id, 'Unknown')
 
                                     if flag_show == True:
                                           stream.image(BGR_TO_RGB(image_array_copy), width=720)
 
                         else:
-                              stream.error("NO HUMAN FACE DETECTED")
+                              no_human_face_detected_error_message = stream.error("NO HUMAN FACE DETECTED")
+                              time.sleep(2)
+                              no_human_face_detected_error_message.empty()
             
 
+      # USER SELECTION AS HISTORY
       if selected_menu == 'HISTORY':
             view_attendance()
 
 
-            
+      # USER SELECTION AS DATABASE
       if selected_menu == 'DATABASE':
             col1, col2, col3 = stream.columns(3)
 
@@ -258,6 +275,39 @@ def main():
 
                   DB = initialize_data()
                   add_data_db(dataframe_new)
+
+
+      if selected_menu == 'RECORDS':
+
+            #CREATING A DIRECTORY FOR UPLOADED RECORD FILES 
+            if not os.path.exists("records"):
+                  os.mkdir("records")
+
+            #CREATING A FILE UPLOADER
+            uploaded_files = stream.file_uploader("UPLOAD THE STUDENT RECORDS FILE", type=["xlsx"], accept_multiple_files=True)
+
+            #CHECK 
+            if uploaded_files:
+                  save_uploaded_files(uploaded_files)
+                  
+                  #DISPLAYING THE UPLOADED FILES 
+                  success_message = stream.success("RECORDS UPLOADED SUCCESSFULLY")
+                  time.sleep(3)
+                  success_message.empty()
+                  
+            #SELECTING THE RECORD TO DISPLAY
+            selected_file = stream.selectbox("SELECT A RECORD : ", os.listdir("records"))
+
+            if selected_file:
+                  stream.markdown("### TABLE : ")
+                  display_excel_table(os.path.join("records", selected_file))
+
+            #DELETE BUTTON TO DELETE THE FOLDER STRUCTURE
+            if stream.button("DELETE ALL RECORDS"):
+                  delete_uploaded_files()
+                  deleted_warning__message = stream.warning("ALL UPLOADED FILES DELETED SUCCESSFULLY")
+                  time.sleep(3)
+                  deleted_warning__message.empty()
 
 
 

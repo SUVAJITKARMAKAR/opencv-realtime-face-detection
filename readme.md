@@ -90,7 +90,7 @@ streamlit run RTFD.py
 
 
 ## SCREENSHOTS
-![Image](Images/LANDING-PAGE.png)
+![Image](Images/INTRODUCTION-PAGE.png)
 ![Image](Images/ABOUT-THE-APPLICATION.png)
 ![Image](Images/ABOUT-THE-AUTHOR.png)
 ![Image](Images/FLOWCHART.png)

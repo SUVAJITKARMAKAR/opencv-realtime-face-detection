@@ -7,6 +7,7 @@ import streamlit as stream
 import cv2 as cv
 import face_recognition
 import numpy as num
+import time
 from PIL import Image
 
 
@@ -78,11 +79,15 @@ def add_data_db(dataframe_visitor_details):
                   dataframe_all.drop_duplicates(keep='first', inplace=True)
                   dataframe_all.reset_index(inplace=True, drop=True)
                   dataframe_all.to_csv(os.path.join(data_path, file_db), index=False)
-                  stream.success("DETAILS HAVE BEEN ADDED SUCCESSFULLY !")
+                  details_success_message = stream.success("DETAILS HAVE BEEN ADDED SUCCESSFULLY !")
+                  time.sleep(2)
+                  details_success_message.empty()
                   
             else:
                   dataframe_visitor_details.to_csv(os.path.join(data_path, file_db), index=False)
-                  stream.success("INITIATED DATA SUCCESSFULLY !")
+                  initiated_success_message = stream.success("INITIATED DATA SUCCESSFULLY !")
+                  time.sleep(2)
+                  initiated_success_message.empty()
 
       except Exception as e:
             stream.error(e)
