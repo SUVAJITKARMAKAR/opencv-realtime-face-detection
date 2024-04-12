@@ -1,5 +1,6 @@
 # IMPORTING THE REQUIRED MODULES IN THE WORKSPACE
 import uuid as uid
+import time
 from streamlit_option_menu import option_menu
 from functionalities import * 
 
@@ -27,6 +28,10 @@ stream.markdown(html_temp, unsafe_allow_html=True)
 
 # DEFINING THE STATIC PATHS
 if stream.sidebar.button("CLEAR DATABASE"):
+      rtfd_warning_message = stream.sidebar.warning("ALL DATA WOULD BE DELETED")
+      time.sleep(2)
+      rtfd_warning_message.empty()
+
       shutil.rmtree(VISITOR_DB, ignore_errors=True)
       os.mkdir(VISITOR_DB)
 
