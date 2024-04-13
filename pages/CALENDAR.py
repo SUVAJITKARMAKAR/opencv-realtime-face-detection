@@ -18,7 +18,7 @@ def main():
 
       # Get user input for year and month
       year = stream.number_input("ENTER YEAR:", min_value=2024, max_value=2100, step=1)
-      month = stream.selectbox("SELECT MONTH:", list(calendar.month_name)[4 :])
+      month = stream.selectbox("SELECT MONTH:", list(calendar.month_name)[1:])
 
       # Get the calendar for the specified month and year
       cal = calendar.monthcalendar(year, list(calendar.month_name).index(month))
